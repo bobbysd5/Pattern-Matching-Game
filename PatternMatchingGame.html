@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JavaScript Practice</title>
+    <style>
+        .gameArea{
+            height: 200px;
+            width:200px;
+            border:1px solid black;
+        }
+        .box{
+            height: 50%;
+            width: 50%;
+            display:inline-block;
+        }
+    </style>
+</head>
+
+<body>
+<div class="message">Press the Start Button</div>
+<div class="gameArea"></div>
+<button type="button">Start</button>
+<script>
+const message=document.querySelector(".message");
+const gameArea=document.querySelector(".gameArea");
+const button=document.querySelector("button");
+const gameColors=["red","blue","green", "yellow"];
+let sequenceNum=2;
+let game =false;
+let playerClicks=[];
+let computerClicks=[];
+
+button.addEventListener("click", function(){
+    play();
+});
+
+function play(){
+    button.style.display="none";
+    playerClicks=[];
+    computerClicks=[];
+    runSequence(sequenceNum);
+}
+
+function runSequence(num){
+    let squares=document.querySelectorAll(".box");
+    messager("");
+    num--
+    if(num<0){
+    game=true;
+    return;
+    }
+    let randomNum=Math.floor(Math.random()*gameColors.length);
+    computerClicks.push(gameColors[randomNum]);
+    squares[randomNum].style.opacity="1";
+    setTimeout(function (){
+        squares[randomNum].style.opacity="0.5";
+        setTimeout(function (){
+            runSequence(num);
+        },100)
+    },500)
+};
+
+window.addEventListener("load", setup);
+function setup(){
+    for(let x=0;x<gameColors.length;x++){
+        let div = eleCreator("div");
+        div.classList.add("box");
+        div.style.backgroundColor=gameColors[x];
+        div.style.opacity="0.5";
+        div.myColors=gameColors[x];
+        div.addEventListener("click",checkAnswer);
+        gameArea.appendChild(div);
+    };
+};
+
+function checkAnswer(t){
+    if(game){ let tracker=t.target;
+        playerClicks.push(tracker.myColors);
+        tracker.style.opacity="1";
+        setTimeout(function (){
+            tracker.style.opacity="0.5";
+        },500);
+        if(playerClicks.length==computerClicks.length){
+            game=false;
+            endGame();
+        }
+    };
+};
+
+function endGame(){
+    button.style.display="block";
+    if(playerClicks.toString()==computerClicks.toString()){
+        sequenceNum++
+        messager("Correct, Try the Next Pattern");
+        button.innerHTML="Next";
+    }else{
+        messager("Incorrect")
+        button.innerHTML="Try Again";
+    }
+}
+
+function messager(mess){
+    message.innerHTML=mess;
+}
+
+function eleCreator(element){
+    let creator = document.createElement(element);
+    return creator;
+}
+
+</script>
+</body>
+
+</html>
